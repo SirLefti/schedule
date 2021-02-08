@@ -308,7 +308,8 @@ public class Schedule {
 			firstExecution = firstExecution.withHour(targetHour).withMinute(targetMinute).withSecond(targetSecond);
 			temporal = ChronoUnit.DAYS;
 		} else if (_unit == ChronoUnit.WEEKS) {
-			firstExecution = firstExecution.plusDays((_startDay.compareTo(firstExecution.getDayOfWeek()) + DAYS_PER_WEEK) % DAYS_PER_WEEK);
+			firstExecution = firstExecution.plusDays((_startDay.compareTo(firstExecution.getDayOfWeek()) + DAYS_PER_WEEK) % DAYS_PER_WEEK)
+					.withHour(targetHour).withMinute(targetMinute).withSecond(targetSecond);
 			temporal = ChronoUnit.WEEKS;
 		}
 		if (firstExecution.isBefore(now)) {
