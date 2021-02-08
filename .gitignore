@@ -1,0 +1,9 @@
+# build tool files
+target/
+
+# IDEA files
+.idea/
+*.iml
+
+# OS files
+**/.DS_Store
