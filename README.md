@@ -14,7 +14,6 @@ Python lib [schedule](https://pypi.org/project/schedule/) by D. Bader to Java.
 ```java
 public class Example {
 	public static void main(String[] args) {
-		Schedule.init(1);
 		Runnable task = () -> System.out.println("Hello World!");
 
 		Schedule.every(10).seconds().run(task);

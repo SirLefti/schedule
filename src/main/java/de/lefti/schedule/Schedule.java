@@ -1,24 +1,76 @@
 package de.lefti.schedule;
 
 import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Schedule {
 
 	private final int _interval;
 	private ChronoUnit _unit;
 	private DayOfWeek _startDay = DayOfWeek.MONDAY;
-	private int targetHour = 0;
-	private int targetMinute = 0;
-	private int targetSecond = 0;
+	private Runnable _task;
 
-	private static ScheduledExecutorService _scheduler;
+	private boolean _alive = true;
+	private boolean _targetTime = false;
+	private long _lastExecution = 0;
+	private long _nextExecution = 0;
+	private int _targetHour = 0;
+	private int _targetMinute = 0;
+	private int _targetSecond = 0;
+
+	private static final Set<Schedule> _scheduledTasks = new HashSet<>();
+	private static final CoreScheduler _coreScheduler = new CoreScheduler();
+
+	private static final class CoreScheduler implements Runnable {
+		private boolean _alive = true;
+
+		public void kill() {
+			_alive = false;
+		}
+
+		public synchronized void wakeUp() {
+			this.notify();
+		}
+
+		@Override
+		public synchronized void run() {
+			Set<Schedule> toDelete = new HashSet<>();
+			while (_alive) {
+				System.out.println("Running core scheduler");
+				try {
+					long nextExecution = Long.MAX_VALUE;
+					for (Schedule scheduledTask : _scheduledTasks) {
+						if (scheduledTask._alive) {
+							nextExecution = Math.min(scheduledTask._nextExecution, nextExecution);
+						} else {
+							toDelete.add(scheduledTask);
+						}
+					}
+					_scheduledTasks.removeAll(toDelete);
+					toDelete.clear();
+					long now = System.currentTimeMillis();
+					if (nextExecution > now) {
+						this.wait(nextExecution - now);
+					}
+					for (Schedule scheduledTask : _scheduledTasks) {
+						if (scheduledTask.shouldRun()) {
+							new Thread(scheduledTask._task).start();
+							// now reschedule
+							scheduledTask._lastExecution = scheduledTask._nextExecution;
+							scheduledTask._nextExecution = scheduledTask.nextExecutionTimestamp();
+						}
+					}
+
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
 	/**
 	 * Private accessed constructor.
@@ -30,22 +82,11 @@ public class Schedule {
 	}
 
 	/**
-	 * Initializes the scheduler. Greater pool sizes might improve performance when executing multiple task
-	 * simultaneously.
-	 *
-	 * @param poolSize pool size to be used for internal scheduler.
-	 */
-	public static void init(int poolSize) {
-		_scheduler = new ScheduledThreadPoolExecutor(poolSize);
-	}
-
-	/**
 	 * Creates a scheduled task with the default interval.
 	 *
 	 * @return Schedule object
 	 */
 	public static Schedule every() {
-		assert _scheduler != null : "scheduler not initialized";
 		return new Schedule(1);
 	}
 
@@ -56,7 +97,6 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public static Schedule every(int interval) {
-		assert _scheduler != null : "scheduler not initialized";
 		assert interval != 1 : "use every() instead";
 		assert interval > 1 : "use positive interval values only";
 		return new Schedule(interval);
@@ -250,6 +290,7 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule at(String time) {
+		_targetTime = true;
 		if (_unit == ChronoUnit.MINUTES) {
 			assert time.matches("^:[0-5]\\d$") : "invalid time format";
 		} else if (_unit == ChronoUnit.HOURS) {
@@ -261,22 +302,22 @@ public class Schedule {
 		}
 		String[] values = time.split(":");
 		if (values.length == 3) {
-			targetHour = Integer.parseInt(values[0]);
-			targetMinute = Integer.parseInt(values[1]);
-			targetSecond = Integer.parseInt(values[2]);
+			_targetHour = Integer.parseInt(values[0]);
+			_targetMinute = Integer.parseInt(values[1]);
+			_targetSecond = Integer.parseInt(values[2]);
 		} else if (values.length == 2 && _unit == ChronoUnit.MINUTES) {
-			targetSecond = Integer.parseInt(values[1]);
+			_targetSecond = Integer.parseInt(values[1]);
 		} else if (values.length == 2 && _unit == ChronoUnit.HOURS) {
 			if (values[0].isEmpty()) {
-				targetMinute = Integer.parseInt(values[1]);
+				_targetMinute = Integer.parseInt(values[1]);
 			} else {
-				targetMinute = Integer.parseInt(values[0]);
-				targetSecond = Integer.parseInt(values[1]);
+				_targetMinute = Integer.parseInt(values[0]);
+				_targetSecond = Integer.parseInt(values[1]);
 			}
 		} else if (values.length == 2) {
 			// implies that unit is days or weeks
-			targetHour = Integer.parseInt(values[0]);
-			targetMinute = Integer.parseInt(values[1]);
+			_targetHour = Integer.parseInt(values[0]);
+			_targetMinute = Integer.parseInt(values[1]);
 		}
 		return this;
 	}
@@ -287,38 +328,64 @@ public class Schedule {
 	 * @param task task to be run.
 	 */
 	public void run(Runnable task) {
-		_scheduler.scheduleAtFixedRate(task, initialDelay(), delay(), TimeUnit.MILLISECONDS);
+		_task = task;
+		_scheduledTasks.add(this);
+		_nextExecution = nextExecutionTimestamp();
+		if (_scheduledTasks.size() == 1) {
+			// This means, we added the first task, so we start the core scheduler
+			new Thread(_coreScheduler).start();
+		} else {
+			_coreScheduler.wakeUp();
+		}
 	}
 
-	private long initialDelay() {
-		final int DAYS_PER_WEEK = 7;
-		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime firstExecution = now.truncatedTo(ChronoUnit.SECONDS);
-		TemporalUnit temporal = ChronoUnit.SECONDS;
-		if (_unit == ChronoUnit.SECONDS) {
-			firstExecution = firstExecution.plusSeconds(1);
-			temporal = ChronoUnit.SECONDS;
-		} else if (_unit == ChronoUnit.MINUTES) {
-			firstExecution = firstExecution.withSecond(targetSecond);
-			temporal = ChronoUnit.MINUTES;
-		} else if (_unit == ChronoUnit.HOURS) {
-			firstExecution = firstExecution.withMinute(targetMinute).withSecond(targetSecond);
-			temporal = ChronoUnit.HOURS;
-		} else if (_unit == ChronoUnit.DAYS) {
-			firstExecution = firstExecution.withHour(targetHour).withMinute(targetMinute).withSecond(targetSecond);
-			temporal = ChronoUnit.DAYS;
-		} else if (_unit == ChronoUnit.WEEKS) {
-			firstExecution = firstExecution.plusDays((_startDay.compareTo(firstExecution.getDayOfWeek()) + DAYS_PER_WEEK) % DAYS_PER_WEEK)
-					.withHour(targetHour).withMinute(targetMinute).withSecond(targetSecond);
-			temporal = ChronoUnit.WEEKS;
-		}
-		if (firstExecution.isBefore(now)) {
-			firstExecution = firstExecution.plus(1, temporal);
-		}
-		return Duration.between(LocalDateTime.now(), firstExecution).toMillis();
+	/**
+	 * Cancels the scheduled task. If the task is currently running, it will be finished. If not, the task is cancelled
+	 * immediately.
+	 */
+	public void cancel() {
+		_alive = false;
 	}
 
-	private long delay() {
-		return _unit.getDuration().toMillis() * _interval;
+	public static void shutdown() {
+		_coreScheduler.kill();
+	}
+
+	private long nextExecutionTimestamp() {
+		if (_lastExecution == 0 && !_targetTime) {
+			return System.currentTimeMillis();
+		} else if (!_targetTime) {
+			return _lastExecution + _unit.getDuration().toMillis() * _interval;
+		} else {
+			final int DAYS_PER_WEEK = 7;
+			ZonedDateTime now = ZonedDateTime.now();
+			ZonedDateTime next = now.truncatedTo(ChronoUnit.SECONDS);
+			TemporalUnit temporal = ChronoUnit.SECONDS;
+			if (_unit == ChronoUnit.SECONDS) {
+				next = next.plusSeconds(_interval);
+				temporal = ChronoUnit.SECONDS;
+			} else if (_unit == ChronoUnit.MINUTES) {
+				next = next.withSecond(_targetSecond);
+				temporal = ChronoUnit.MINUTES;
+			} else if (_unit == ChronoUnit.HOURS) {
+				next = next.withMinute(_targetMinute).withSecond(_targetSecond);
+				temporal = ChronoUnit.HOURS;
+			} else if (_unit == ChronoUnit.DAYS) {
+				next = next.withHour(_targetHour).withMinute(_targetMinute).withSecond(_targetSecond);
+				temporal = ChronoUnit.DAYS;
+			} else if (_unit == ChronoUnit.WEEKS) {
+				next = next.plusDays((_startDay.compareTo(next.getDayOfWeek()) + DAYS_PER_WEEK) % DAYS_PER_WEEK)
+						.withHour(_targetHour).withMinute(_targetMinute).withSecond(_targetSecond);
+				temporal = ChronoUnit.WEEKS;
+			}
+			if (next.isBefore(now)) {
+				next = next.plus(1, temporal);
+			}
+			return next.toEpochSecond() * 1000;
+		}
+	}
+
+	private boolean shouldRun() {
+		return _nextExecution < System.currentTimeMillis();
 	}
 }
