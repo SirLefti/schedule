@@ -40,7 +40,6 @@ public class Schedule {
 		public synchronized void run() {
 			Set<Schedule> toDelete = new HashSet<>();
 			while (_alive) {
-				System.out.println("Running core scheduler");
 				try {
 					long nextExecution = Long.MAX_VALUE;
 					for (Schedule scheduledTask : _scheduledTasks) {
@@ -118,6 +117,7 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule seconds() {
+		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.SECONDS;
 		return this;
 	}
@@ -138,6 +138,7 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule minutes() {
+		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.MINUTES;
 		return this;
 	}
@@ -158,6 +159,7 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule hours() {
+		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.HOURS;
 		return this;
 	}
@@ -178,6 +180,7 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule days() {
+		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.DAYS;
 		return this;
 	}
@@ -198,6 +201,7 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule weeks() {
+		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
 		return this;
 	}
@@ -208,6 +212,7 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule monday() {
+		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
 		_startDay = DayOfWeek.MONDAY;
 		return this;
@@ -219,6 +224,7 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule tuesday() {
+		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
 		_startDay = DayOfWeek.TUESDAY;
 		return this;
@@ -230,6 +236,7 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule wednesday() {
+		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
 		_startDay = DayOfWeek.WEDNESDAY;
 		return this;
@@ -241,6 +248,7 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule thursday() {
+		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
 		_startDay = DayOfWeek.THURSDAY;
 		return this;
@@ -252,6 +260,7 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule friday() {
+		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
 		_startDay = DayOfWeek.FRIDAY;
 		return this;
@@ -263,6 +272,7 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule saturday() {
+		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
 		_startDay = DayOfWeek.SATURDAY;
 		return this;
@@ -274,6 +284,7 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule sunday() {
+		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
 		_startDay = DayOfWeek.SUNDAY;
 		return this;
@@ -347,8 +358,13 @@ public class Schedule {
 		_alive = false;
 	}
 
+	/**
+	 * Shuts down the scheduler. All scheduled tasks will be removed. A new scheduler will be created when adding new
+	 * tasks.
+	 */
 	public static void shutdown() {
 		_coreScheduler.kill();
+		_scheduledTasks.clear();
 	}
 
 	private long nextExecutionTimestamp() {
