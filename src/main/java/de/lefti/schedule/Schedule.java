@@ -337,8 +337,9 @@ public class Schedule {
 	 * Schedules the actual task.
 	 * 
 	 * @param task task to be run.
+	 * @return Schedule object
 	 */
-	public void run(Runnable task) {
+	public Schedule run(Runnable task) {
 		_task = task;
 		_scheduledTasks.add(this);
 		_nextExecution = nextExecutionTimestamp();
@@ -348,6 +349,7 @@ public class Schedule {
 		} else {
 			_coreScheduler.wakeUp();
 		}
+		return this;
 	}
 
 	/**
@@ -402,6 +404,6 @@ public class Schedule {
 	}
 
 	private boolean shouldRun() {
-		return _nextExecution < System.currentTimeMillis();
+		return _nextExecution < System.currentTimeMillis() && _alive;
 	}
 }

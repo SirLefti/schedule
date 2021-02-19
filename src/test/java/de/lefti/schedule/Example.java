@@ -9,5 +9,7 @@ public class Example {
 		Schedule.every(10).seconds().run(() -> System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + "] " + "Hello from scheduler every 10 seconds"));
 		Schedule.every().minute().run(() -> System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + "] " + "Hello from scheduler every minute"));
 		Schedule.every().minute().at(":15").run(() -> System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + "] " + "Hello from scheduler every minute at :15"));
+		Schedule toCancel = Schedule.every().second().run(() -> System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + "] " + "This will run only a few times"));
+		Schedule.every().minute().at(":00").run(toCancel::cancel);
 	}
 }
