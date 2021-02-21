@@ -6,8 +6,21 @@
 
     <groupId>de.lefti</groupId>
     <artifactId>schedule</artifactId>
-    <version>1.3</version>
+    <version>1.4</version>
     <packaging>jar</packaging>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Java task scheduling for humans. Execute runnable tasks periodically using a friendly syntax. Basically a port of the
+        Python lib schedule (see https://pypi.org/project/schedule/) by D. Bader to Java.</description>
+    <url>https://github.com/SirLefti/schedule</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
