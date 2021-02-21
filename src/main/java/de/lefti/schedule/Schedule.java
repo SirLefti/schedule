@@ -308,7 +308,7 @@ public class Schedule {
 	 */
 	public Schedule month() {
 		assert _interval == 1 : "use months() instead";
-		return weeks();
+		return months();
 	}
 
 	/**
@@ -473,7 +473,7 @@ public class Schedule {
 	 */
 	public Schedule year() {
 		assert _interval == 1 : "use years() instead";
-		return weeks();
+		return years();
 	}
 
 	/**
@@ -490,12 +490,12 @@ public class Schedule {
 	/**
 	 * Sets the scheduled task to be run at a given time.
 	 * <p>
-	 * For daily or weekly tasks --> "HH:MM:SS" or "HH:MM"
-	 * For hourly tasks --> "MM:SS" or ":MM"
-	 * For minute tasks --> ":SS"
+	 * For daily or weekly tasks --> "HH:MM:SS" or "HH:MM"<br>
+	 * For hourly tasks --> "MM:SS" or ":MM"<br>
+	 * For minute tasks --> ":SS"<br>
 	 * <p>
-	 * For monthly tasks --> "-dd HH:MM:SS" or "-dd HH:MM" or "-dd"
-	 * For yearly tasks --> "mm-dd HH:MM:SS" or "mm-dd HH:MM" or "mm-dd"
+	 * For monthly tasks --> "-dd HH:MM:SS", "-dd HH:MM" or "-dd"<br>
+	 * For yearly tasks --> "mm-dd HH:MM:SS", "mm-dd HH:MM", "mm-dd", "-dd HH:MM:SS", "-dd HH:MM" or "-dd"<br>
 	 *
 	 * @param time time as string.
 	 * @return Schedule object
@@ -509,10 +509,10 @@ public class Schedule {
 		} else if (_unit == ChronoUnit.DAYS || _unit == ChronoUnit.WEEKS) {
 			assert time.matches("^([0-2]\\d:)?[0-5]\\d:[0-5]\\d$") : "invalid time format";
 		} else if (_unit == ChronoUnit.MONTHS) {
-			assert time.matches("^(-[0-2]\\d)((\\s[0-2]\\d):([0-5]\\d)(:[0-5]\\d)?)?$") : "invalid time format";
+			assert time.matches("^(-[0-3]\\d)((\\s[0-2]\\d):([0-5]\\d)(:[0-5]\\d)?)?$") : "invalid time format";
 			_usingTargetDate = true;
 		} else if (_unit == ChronoUnit.YEARS) {
-			assert time.matches("^([0-2]\\d)(-[0-2]\\d)((\\s[0-2]\\d):([0-5]\\d)(:[0-5]\\d)?)?$") : "invalid time format";
+			assert time.matches("^([0-1]\\d)?(-[0-3]\\d)((\\s[0-2]\\d):([0-5]\\d)(:[0-5]\\d)?)?$") : "invalid time format";
 			_usingTargetDate = true;
 		} else {
 			throw new AssertionError("invalid time unit");
@@ -548,10 +548,15 @@ public class Schedule {
 				_targetMinute = Integer.parseInt(values[0]);
 				_targetSecond = Integer.parseInt(values[1]);
 			}
-		} else if (values.length == 2) {
+		} else if (values.length == 2 && (_unit == ChronoUnit.DAYS || _unit == ChronoUnit.WEEKS)) {
 			// implies that unit is days or weeks
 			_targetHour = Integer.parseInt(values[0]);
 			_targetMinute = Integer.parseInt(values[1]);
+		} else if (values.length == 2 && (_unit == ChronoUnit.MONTHS || _unit == ChronoUnit.YEARS)) {
+			if (!values[0].isEmpty()) {
+				_targetMonth = Integer.parseInt(values[0]);
+			}
+			_targetDay = Integer.parseInt(values[1]);
 		}
 		return this;
 	}
