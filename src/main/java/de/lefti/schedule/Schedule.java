@@ -549,7 +549,6 @@ public class Schedule {
 				_targetSecond = Integer.parseInt(values[1]);
 			}
 		} else if (values.length == 2 && (_unit == ChronoUnit.DAYS || _unit == ChronoUnit.WEEKS)) {
-			// implies that unit is days or weeks
 			_targetHour = Integer.parseInt(values[0]);
 			_targetMinute = Integer.parseInt(values[1]);
 		} else if (values.length == 2 && (_unit == ChronoUnit.MONTHS || _unit == ChronoUnit.YEARS)) {
@@ -572,7 +571,9 @@ public class Schedule {
 		_nextExecution = nextExecutionTimestamp();
 		if (_coreScheduler.addTask(this)) {
 			// This means, we added the first task, so we start the core scheduler
-			new Thread(_coreScheduler).start();
+			Thread t = new Thread(_coreScheduler);
+			t.setName("CoreScheduler");
+			t.start();
 		} else {
 			_coreScheduler.wakeUp();
 		}

@@ -82,7 +82,6 @@ public class TestNextExecution {
 		Schedule task = Schedule.every().april().at("-01");
 		int startYear = 2020;
 		ZonedDateTime firstOfApr2020 = ZonedDateTime.of(LocalDate.of(startYear, Month.APRIL, 1), LocalTime.of(0, 0, 0), ZoneId.systemDefault());
-
 		long next = firstOfApr2020.toInstant().toEpochMilli();
 
 		for (int i = 1; i <= 4; i++) {
@@ -104,6 +103,21 @@ public class TestNextExecution {
 			nextExecution.setLong(task, next);
 			next = (long) nextExecutionTimestamp.invoke(task);
 			assertEquals(talkLikeAPirateDay2020.plusYears(i).toInstant().toEpochMilli(), next);
+		}
+	}
+
+	@Test
+	public void testEveryFirstAprilUsingAt() throws IllegalAccessException, InvocationTargetException {
+		Schedule task = Schedule.every().year().at("04-01");
+		int startYear = 2020;
+		ZonedDateTime firstOfApr2020 = ZonedDateTime.of(LocalDate.of(startYear, Month.APRIL, 1), LocalTime.of(0, 0, 0), ZoneId.systemDefault());
+
+		long next = firstOfApr2020.toInstant().toEpochMilli();
+
+		for (int i = 1; i <= 4; i++) {
+			nextExecution.setLong(task, next);
+			next = (long) nextExecutionTimestamp.invoke(task);
+			assertEquals(firstOfApr2020.plusYears(i).toInstant().toEpochMilli(), next);
 		}
 	}
 }
