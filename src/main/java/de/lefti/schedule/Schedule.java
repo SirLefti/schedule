@@ -9,16 +9,14 @@ public class Schedule {
 
 	private final int _interval;
 	private ChronoUnit _unit;
-	private DayOfWeek _startDay;
-	private Month _startMonth;
 	private Runnable _task;
+	private DayOfWeek _targetDayOfWeek;
 
 	private boolean _alive = true;
 	private boolean _usingTargetDate = false;
 	private boolean _usingTargetTime = false;
-	private long _lastExecution = 0;
 	private long _nextExecution = 0;
-	private int _targetMonth;
+	private int _targetMonth = 1;
 	private int _targetDay = 1;
 	private int _targetHour = 0;
 	private int _targetMinute = 0;
@@ -66,7 +64,6 @@ public class Schedule {
 						if (scheduledTask.shouldRun()) {
 							new Thread(scheduledTask._task).start();
 							// now reschedule
-							scheduledTask._lastExecution = scheduledTask._nextExecution;
 							scheduledTask._nextExecution = scheduledTask.nextExecutionTimestamp();
 						}
 					}
@@ -191,7 +188,7 @@ public class Schedule {
 	public Schedule days() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.DAYS;
-		_startDay = ZonedDateTime.now().getDayOfWeek();
+		_targetDayOfWeek = ZonedDateTime.now().getDayOfWeek();
 		return this;
 	}
 
@@ -213,7 +210,7 @@ public class Schedule {
 	public Schedule weeks() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
-		_startDay = ZonedDateTime.now().getDayOfWeek();
+		_targetDayOfWeek = ZonedDateTime.now().getDayOfWeek();
 		return this;
 	}
 
@@ -225,7 +222,7 @@ public class Schedule {
 	public Schedule monday() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
-		_startDay = DayOfWeek.MONDAY;
+		_targetDayOfWeek = DayOfWeek.MONDAY;
 		return this;
 	}
 
@@ -237,7 +234,7 @@ public class Schedule {
 	public Schedule tuesday() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
-		_startDay = DayOfWeek.TUESDAY;
+		_targetDayOfWeek = DayOfWeek.TUESDAY;
 		return this;
 	}
 
@@ -249,7 +246,7 @@ public class Schedule {
 	public Schedule wednesday() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
-		_startDay = DayOfWeek.WEDNESDAY;
+		_targetDayOfWeek = DayOfWeek.WEDNESDAY;
 		return this;
 	}
 
@@ -261,7 +258,7 @@ public class Schedule {
 	public Schedule thursday() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
-		_startDay = DayOfWeek.THURSDAY;
+		_targetDayOfWeek = DayOfWeek.THURSDAY;
 		return this;
 	}
 
@@ -273,7 +270,7 @@ public class Schedule {
 	public Schedule friday() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
-		_startDay = DayOfWeek.FRIDAY;
+		_targetDayOfWeek = DayOfWeek.FRIDAY;
 		return this;
 	}
 
@@ -285,7 +282,7 @@ public class Schedule {
 	public Schedule saturday() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
-		_startDay = DayOfWeek.SATURDAY;
+		_targetDayOfWeek = DayOfWeek.SATURDAY;
 		return this;
 	}
 
@@ -297,7 +294,7 @@ public class Schedule {
 	public Schedule sunday() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.WEEKS;
-		_startDay = DayOfWeek.SUNDAY;
+		_targetDayOfWeek = DayOfWeek.SUNDAY;
 		return this;
 	}
 
@@ -330,7 +327,7 @@ public class Schedule {
 	public Schedule january() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.YEARS;
-		_startMonth = Month.JANUARY;
+		_targetMonth = 1;
 		return this;
 	}
 
@@ -342,7 +339,7 @@ public class Schedule {
 	public Schedule february() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.YEARS;
-		_startMonth = Month.FEBRUARY;
+		_targetMonth = 2;
 		return this;
 	}
 
@@ -354,7 +351,7 @@ public class Schedule {
 	public Schedule march() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.YEARS;
-		_startMonth = Month.MARCH;
+		_targetMonth = 3;
 		return this;
 	}
 
@@ -366,7 +363,7 @@ public class Schedule {
 	public Schedule april() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.YEARS;
-		_startMonth = Month.APRIL;
+		_targetMonth = 4;
 		return this;
 	}
 
@@ -378,7 +375,7 @@ public class Schedule {
 	public Schedule may() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.YEARS;
-		_startMonth = Month.MAY;
+		_targetMonth = 5;
 		return this;
 	}
 
@@ -390,7 +387,7 @@ public class Schedule {
 	public Schedule june() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.YEARS;
-		_startMonth = Month.JUNE;
+		_targetMonth = 6;
 		return this;
 	}
 
@@ -402,7 +399,7 @@ public class Schedule {
 	public Schedule july() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.YEARS;
-		_startMonth = Month.JULY;
+		_targetMonth = 7;
 		return this;
 	}
 
@@ -414,7 +411,7 @@ public class Schedule {
 	public Schedule august() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.YEARS;
-		_startMonth = Month.AUGUST;
+		_targetMonth = 8;
 		return this;
 	}
 
@@ -426,7 +423,7 @@ public class Schedule {
 	public Schedule september() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.YEARS;
-		_startMonth = Month.SEPTEMBER;
+		_targetMonth = 9;
 		return this;
 	}
 
@@ -438,7 +435,7 @@ public class Schedule {
 	public Schedule october() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.YEARS;
-		_startMonth = Month.OCTOBER;
+		_targetMonth = 10;
 		return this;
 	}
 
@@ -450,7 +447,7 @@ public class Schedule {
 	public Schedule november() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.YEARS;
-		_startMonth = Month.NOVEMBER;
+		_targetMonth = 11;
 		return this;
 	}
 
@@ -462,7 +459,7 @@ public class Schedule {
 	public Schedule december() {
 		assert _unit == null : "schedule unit already set";
 		_unit = ChronoUnit.YEARS;
-		_startMonth = Month.DECEMBER;
+		_targetMonth = 12;
 		return this;
 	}
 
@@ -615,13 +612,13 @@ public class Schedule {
 			} else if (_unit == ChronoUnit.DAYS) {
 				next = next.withHour(_targetHour).withMinute(_targetMinute).withSecond(_targetSecond);
 			} else if (_unit == ChronoUnit.WEEKS) {
-				next = next.plusDays((_startDay.compareTo(next.getDayOfWeek()) + DAYS_PER_WEEK) % DAYS_PER_WEEK)
+				next = next.plusDays((_targetDayOfWeek.compareTo(next.getDayOfWeek()) + DAYS_PER_WEEK) % DAYS_PER_WEEK)
 						.withHour(_targetHour).withMinute(_targetMinute).withSecond(_targetSecond);
 			} else if (_unit == ChronoUnit.MONTHS) {
-				next = next.withMonth(_startMonth.ordinal() + 1).withDayOfMonth(_targetDay)
+				next = next.withMonth(_targetMonth).withDayOfMonth(_targetDay)
 						.withHour(_targetHour).withMinute(_targetMinute).withSecond(_targetSecond);
 			} else if (_unit == ChronoUnit.YEARS) {
-				next = next.withMonth(_startMonth.ordinal() + 1).withDayOfMonth(_targetDay)
+				next = next.withMonth(_targetMonth).withDayOfMonth(_targetDay)
 						.withHour(_targetHour).withMinute(_targetMinute).withSecond(_targetSecond);
 			}
 			if (!next.isAfter(now)) {

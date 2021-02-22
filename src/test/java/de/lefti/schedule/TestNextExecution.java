@@ -108,16 +108,14 @@ public class TestNextExecution {
 
 	@Test
 	public void testEveryFirstAprilUsingAt() throws IllegalAccessException, InvocationTargetException {
-		Schedule task = Schedule.every().year().at("04-01");
-		int startYear = 2020;
-		ZonedDateTime firstOfApr2020 = ZonedDateTime.of(LocalDate.of(startYear, Month.APRIL, 1), LocalTime.of(0, 0, 0), ZoneId.systemDefault());
+		// actually add a runnable to test the scheduling as it would be made in reality
+		Schedule task = Schedule.every().year().at("04-01").run(() -> System.out.println("Hello world"));
 
-		long next = firstOfApr2020.toInstant().toEpochMilli();
-
-		for (int i = 1; i <= 4; i++) {
-			nextExecution.setLong(task, next);
-			next = (long) nextExecutionTimestamp.invoke(task);
-			assertEquals(firstOfApr2020.plusYears(i).toInstant().toEpochMilli(), next);
+		ZonedDateTime firstOfApril = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).withMonth(4).withDayOfMonth(1);
+		if (firstOfApril.isBefore(ZonedDateTime.now())) {
+			firstOfApril = firstOfApril.plusYears(1);
 		}
+
+		assertEquals(firstOfApril.toInstant().toEpochMilli(), nextExecution.get(task));
 	}
 }
