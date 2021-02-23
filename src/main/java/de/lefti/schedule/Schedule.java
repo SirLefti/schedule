@@ -621,7 +621,7 @@ public class Schedule {
 				next = next.withMonth(_targetMonth).withDayOfMonth(_targetDay)
 						.withHour(_targetHour).withMinute(_targetMinute).withSecond(_targetSecond);
 			}
-			if (!next.isAfter(now)) {
+			while (!next.isAfter(now)) {
 				next = next.plus(1, _unit);
 			}
 			return next.toInstant().toEpochMilli();

@@ -43,14 +43,16 @@ public class TestNextExecution {
 	@Test
 	public void testFirstOfMonth() throws IllegalAccessException, InvocationTargetException {
 		Schedule task = Schedule.every().month().at("-01");
-		ZonedDateTime firstOfJan2020 = ZonedDateTime.of(LocalDate.of(2020, Month.JANUARY, 1), LocalTime.of(0, 0, 0), ZoneId.systemDefault());
 
-		long next = firstOfJan2020.toInstant().toEpochMilli();
+		ZonedDateTime firstOfMonth = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).withDayOfMonth(1);
+		if (firstOfMonth.isBefore(ZonedDateTime.now())) {
+			firstOfMonth = firstOfMonth.plusMonths(1);
+		}
 
-		for (int i = 2; i <= 12; i++) {
+		for (int i = 0; i <= 12; i++) {
+			long next = (long) nextExecutionTimestamp.invoke(task);
+			assertEquals(firstOfMonth.plusMonths(i).toInstant().toEpochMilli(), next);
 			nextExecution.setLong(task, next);
-			next = (long) nextExecutionTimestamp.invoke(task);
-			assertEquals(firstOfJan2020.withMonth(i).toInstant().toEpochMilli(), next);
 		}
 	}
 
@@ -66,49 +68,53 @@ public class TestNextExecution {
 	@Test
 	public void testLastOfMonth() throws IllegalAccessException, InvocationTargetException {
 		Schedule task = Schedule.every().month().at("-31");
-		ZonedDateTime lastOfJan2020 = ZonedDateTime.of(LocalDate.of(2020, Month.JANUARY, 31), LocalTime.of(0, 0, 0), ZoneId.systemDefault());
 
-		long next = lastOfJan2020.toInstant().toEpochMilli();
+		ZonedDateTime lastOfJan = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).withMonth(1).withDayOfMonth(31);
+		if (lastOfJan.isBefore(ZonedDateTime.now())) {
+			lastOfJan = lastOfJan.plusYears(1);
+		}
 
 		for (int i = 2; i <= 12; i++) {
+			long next = (long) nextExecutionTimestamp.invoke(task);
+			assertEquals(lastOfJan.withMonth(i).toInstant().toEpochMilli(), next);
 			nextExecution.setLong(task, next);
-			next = (long) nextExecutionTimestamp.invoke(task);
-			assertEquals(lastOfJan2020.withMonth(i).toInstant().toEpochMilli(), next);
 		}
 	}
 
 	@Test
 	public void testEveryFirstApril() throws IllegalAccessException, InvocationTargetException {
 		Schedule task = Schedule.every().april().at("-01");
-		int startYear = 2020;
-		ZonedDateTime firstOfApr2020 = ZonedDateTime.of(LocalDate.of(startYear, Month.APRIL, 1), LocalTime.of(0, 0, 0), ZoneId.systemDefault());
-		long next = firstOfApr2020.toInstant().toEpochMilli();
 
-		for (int i = 1; i <= 4; i++) {
+		ZonedDateTime firstOfApr = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).withMonth(4).withDayOfMonth(1);
+		if (firstOfApr.isBefore(ZonedDateTime.now())) {
+			firstOfApr = firstOfApr.plusYears(1);
+		}
+
+		for (int i = 0; i <= 4; i++) {
+			long next = (long) nextExecutionTimestamp.invoke(task);
+			assertEquals(firstOfApr.plusYears(i).toInstant().toEpochMilli(), next);
 			nextExecution.setLong(task, next);
-			next = (long) nextExecutionTimestamp.invoke(task);
-			assertEquals(firstOfApr2020.plusYears(i).toInstant().toEpochMilli(), next);
 		}
 	}
 
 	@Test
 	public void testEveryTalkLikeAPirateDay() throws IllegalAccessException, InvocationTargetException {
 		Schedule task = Schedule.every().september().at("-19");
-		int startYear = 2020;
-		ZonedDateTime talkLikeAPirateDay2020 = ZonedDateTime.of(LocalDate.of(startYear, Month.APRIL, 1), LocalTime.of(0, 0, 0), ZoneId.systemDefault());
 
-		long next = talkLikeAPirateDay2020.toInstant().toEpochMilli();
+		ZonedDateTime talkLikeAPirateDay = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).withMonth(9).withDayOfMonth(19);
+		if (talkLikeAPirateDay.isBefore(ZonedDateTime.now())) {
+			talkLikeAPirateDay = talkLikeAPirateDay.plusYears(1);
+		}
 
-		for (int i = 1; i <= 4; i++) {
+		for (int i = 0; i <= 4; i++) {
+			long next = (long) nextExecutionTimestamp.invoke(task);
+			assertEquals(talkLikeAPirateDay.plusYears(i).toInstant().toEpochMilli(), next);
 			nextExecution.setLong(task, next);
-			next = (long) nextExecutionTimestamp.invoke(task);
-			assertEquals(talkLikeAPirateDay2020.plusYears(i).toInstant().toEpochMilli(), next);
 		}
 	}
 
 	@Test
-	public void testEveryFirstAprilUsingAt() throws IllegalAccessException, InvocationTargetException {
-		// actually add a runnable to test the scheduling as it would be made in reality
+	public void testEveryFirstAprilUsingAt() throws IllegalAccessException {
 		Schedule task = Schedule.every().year().at("04-01").run(() -> System.out.println("Hello world"));
 
 		ZonedDateTime firstOfApril = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).withMonth(4).withDayOfMonth(1);
