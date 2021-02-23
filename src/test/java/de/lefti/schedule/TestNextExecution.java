@@ -122,6 +122,31 @@ public class TestNextExecution {
 			firstOfApril = firstOfApril.plusYears(1);
 		}
 
-		assertEquals(firstOfApril.toInstant().toEpochMilli(), nextExecution.get(task));
+		assertEquals(firstOfApril.toInstant().toEpochMilli(), nextExecution.getLong(task));
+	}
+
+	@Test
+	public void testOnceAtSpecificDate() throws IllegalAccessException {
+		Schedule task = Schedule.once().september().at("-19").run(() -> System.out.println("Hello world"));
+
+		ZonedDateTime talkLikeAPirateDay = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).withMonth(9).withDayOfMonth(19);
+		if (talkLikeAPirateDay.isBefore(ZonedDateTime.now())) {
+			talkLikeAPirateDay = talkLikeAPirateDay.plusYears(1);
+		}
+
+		assertEquals(talkLikeAPirateDay.toInstant().toEpochMilli(), nextExecution.getLong(task));
+	}
+
+	@Test
+	public void testOnceAtNextMonday() throws IllegalAccessException {
+		Schedule task = Schedule.once().monday().at("08:00").run(() -> System.out.println("Hello world"));
+		final int DAYS_PER_WEEK = 7;
+
+		ZonedDateTime nextMonday8AM = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).withHour(8);
+		if (nextMonday8AM.isBefore(ZonedDateTime.now())) {
+			nextMonday8AM = nextMonday8AM.plusDays((DayOfWeek.MONDAY.compareTo(nextMonday8AM.getDayOfWeek()) + DAYS_PER_WEEK) % DAYS_PER_WEEK);
+		}
+
+		assertEquals(nextMonday8AM.toInstant().toEpochMilli(), nextExecution.getLong(task));
 	}
 }

@@ -13,6 +13,7 @@ public class Schedule {
 	private DayOfWeek _targetDayOfWeek;
 
 	private boolean _alive = true;
+	private boolean _repeat = true;
 	private boolean _usingTargetDate = false;
 	private boolean _usingTargetTime = false;
 	private long _nextExecution = 0;
@@ -63,8 +64,12 @@ public class Schedule {
 					for (Schedule scheduledTask : _scheduledTasks) {
 						if (scheduledTask.shouldRun()) {
 							new Thread(scheduledTask._task).start();
-							// now reschedule
-							scheduledTask._nextExecution = scheduledTask.nextExecutionTimestamp();
+							if (scheduledTask._repeat) {
+								// now reschedule
+								scheduledTask._nextExecution = scheduledTask.nextExecutionTimestamp();
+							} else {
+								scheduledTask.cancel();
+							}
 						}
 					}
 
@@ -87,6 +92,17 @@ public class Schedule {
 	}
 
 	/**
+	 * Private accessed constructor.
+	 *
+	 * @param interval base interval for execution
+	 * @param repeat {@code true} for continuous repeated tasks; {@code false} else
+	 */
+	private Schedule(int interval, boolean repeat) {
+		_interval = interval;
+		_repeat = repeat;
+	}
+
+	/**
 	 * Creates a scheduled task with the default interval.
 	 *
 	 * @return Schedule object
@@ -105,6 +121,16 @@ public class Schedule {
 		assert interval != 1 : "use every() instead";
 		assert interval > 1 : "use positive interval values only";
 		return new Schedule(interval);
+	}
+
+	/**
+	 * Creates a scheduled task that is executed only once.
+	 * Use with {@link #at(String)} to specify the timestamp.
+	 *
+	 * @return Schedule object
+	 */
+	public static Schedule once() {
+		return new Schedule(1, false);
 	}
 
 	/**
@@ -494,28 +520,31 @@ public class Schedule {
 	 * For monthly tasks --> "-dd HH:MM:SS", "-dd HH:MM" or "-dd"<br>
 	 * For yearly tasks --> "mm-dd HH:MM:SS", "mm-dd HH:MM", "mm-dd", "-dd HH:MM:SS", "-dd HH:MM" or "-dd"<br>
 	 *
-	 * @param time time as string.
+	 * @param timestamp timestamp as string.
 	 * @return Schedule object
 	 */
-	public Schedule at(String time) {
+	public Schedule at(String timestamp) {
 		_usingTargetTime = true;
+		if (!_repeat && _unit == null) {
+			_unit = ChronoUnit.YEARS;
+		}
 		if (_unit == ChronoUnit.MINUTES) {
-			assert time.matches("^:[0-5]\\d$") : "invalid time format";
+			assert timestamp.matches("^:[0-5]\\d$") : "invalid time format";
 		} else if (_unit == ChronoUnit.HOURS) {
-			assert time.matches("^([0-5]\\d)?:[0-5]\\d$") : "invalid time format";
+			assert timestamp.matches("^([0-5]\\d)?:[0-5]\\d$") : "invalid time format";
 		} else if (_unit == ChronoUnit.DAYS || _unit == ChronoUnit.WEEKS) {
-			assert time.matches("^([0-2]\\d:)?[0-5]\\d:[0-5]\\d$") : "invalid time format";
+			assert timestamp.matches("^([0-2]\\d:)?[0-5]\\d:[0-5]\\d$") : "invalid time format";
 		} else if (_unit == ChronoUnit.MONTHS) {
-			assert time.matches("^(-[0-3]\\d)((\\s[0-2]\\d):([0-5]\\d)(:[0-5]\\d)?)?$") : "invalid time format";
+			assert timestamp.matches("^(-[0-3]\\d)((\\s[0-2]\\d):([0-5]\\d)(:[0-5]\\d)?)?$") : "invalid time format";
 			_usingTargetDate = true;
 		} else if (_unit == ChronoUnit.YEARS) {
-			assert time.matches("^([0-1]\\d)?(-[0-3]\\d)((\\s[0-2]\\d):([0-5]\\d)(:[0-5]\\d)?)?$") : "invalid time format";
+			assert timestamp.matches("^([0-1]\\d)?(-[0-3]\\d)((\\s[0-2]\\d):([0-5]\\d)(:[0-5]\\d)?)?$") : "invalid time format";
 			_usingTargetDate = true;
 		} else {
 			throw new AssertionError("invalid time unit");
 		}
 		// Split on colon, whitespace and hyphen
-		String[] values = time.split(":|\\s|-");
+		String[] values = timestamp.split(":|\\s|-");
 		if (values.length == 5) {
 			if (!values[0].isEmpty()) {
 				_targetMonth = Integer.parseInt(values[0]);

@@ -17,5 +17,6 @@ public class Example {
 		Schedule.every().friday().run(() -> System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + "] " + "Hello from scheduler on fridays"));
 		Schedule.every().year().at("02-19 18:03:30").run(() -> System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + "] " + "Hello from scheduler yearly on specific date"));
 		Schedule.every().months().at("-01").run(() -> System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + "] " + "Hello every month"));
+		Schedule.once().day().at("08:00").run(() -> System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + "] " + "Hello just once"));
 	}
 }

@@ -6,7 +6,7 @@
 
     <groupId>de.lefti</groupId>
     <artifactId>schedule</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>

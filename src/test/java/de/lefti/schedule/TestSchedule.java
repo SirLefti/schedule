@@ -19,6 +19,11 @@ public class TestSchedule {
 		Schedule.every(10).second().run(() -> System.out.println("This should never work"));
 	}
 
+	/**
+	 * Currently ignored. Using {@link Schedule#every()} implies an interval of 1, which means a plural as unit does
+	 * not make any sense. However, we have to allow this in the current implementation, because singular unit method
+	 * are calling their plural form.
+	 */
 	@Ignore
 	@Test(expected = AssertionError.class)
 	public void testExpectSyntaxAssertNotIdeal() {
@@ -43,5 +48,11 @@ public class TestSchedule {
 	@Test(expected = AssertionError.class)
 	public void testMoreWeirdSyntax() {
 		Schedule.every().week().monday().run(() -> System.out.println("This should never work"));
+	}
+
+	@Test
+	public void testOnceTaskSyntax() {
+		Schedule.once().at("11-01 08:00").run(() -> System.out.println("Auto-choose year as unit to use month and day as timestamp"));
+		Schedule.once().month().at("-05 09:00").run(() -> System.out.println("Execute at next 5th of a month"));
 	}
 }
