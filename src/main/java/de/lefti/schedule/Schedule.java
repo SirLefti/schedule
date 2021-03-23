@@ -118,8 +118,12 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public static Schedule every(int interval) {
-		assert interval != 1 : "use every() instead";
-		assert interval > 1 : "use positive interval values only";
+		if (interval == 1) {
+			throw new IntervalException("use every() instead");
+		}
+		if (interval < 1) {
+			throw new IntervalException("use positive interval values only");
+		}
 		return new Schedule(interval);
 	}
 
@@ -139,7 +143,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule second() {
-		assert _interval == 1 : "use seconds() instead";
+		if (_interval != 1) {
+			throw new IntervalException("use seconds() instead");
+		}
 		return seconds();
 	}
 
@@ -149,7 +155,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule seconds() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.SECONDS;
 		return this;
 	}
@@ -160,7 +168,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule minute() {
-		assert _interval == 1 : "use minutes() instead";
+		if (_interval != 1) {
+			throw new IntervalException("use minutes() instead");
+		}
 		return minutes();
 	}
 
@@ -170,7 +180,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule minutes() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.MINUTES;
 		return this;
 	}
@@ -181,7 +193,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule hour() {
-		assert _interval == 1 : "use hours() instead";
+		if (_interval != 1) {
+			throw new IntervalException("use hours() instead");
+		}
 		return hours();
 	}
 
@@ -191,7 +205,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule hours() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.HOURS;
 		return this;
 	}
@@ -202,7 +218,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule day() {
-		assert _interval == 1 : "use days() instead";
+		if (_interval != 1) {
+			throw new IntervalException("use days() instead");
+		}
 		return days();
 	}
 
@@ -212,7 +230,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule days() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.DAYS;
 		_targetDayOfWeek = ZonedDateTime.now().getDayOfWeek();
 		return this;
@@ -224,7 +244,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule week() {
-		assert _interval == 1 : "use weeks() instead";
+		if (_interval != 1) {
+			throw new IntervalException("use weeks() instead");
+		}
 		return weeks();
 	}
 
@@ -234,7 +256,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule weeks() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.WEEKS;
 		_targetDayOfWeek = ZonedDateTime.now().getDayOfWeek();
 		return this;
@@ -246,7 +270,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule monday() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.WEEKS;
 		_targetDayOfWeek = DayOfWeek.MONDAY;
 		return this;
@@ -258,7 +284,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule tuesday() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.WEEKS;
 		_targetDayOfWeek = DayOfWeek.TUESDAY;
 		return this;
@@ -270,7 +298,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule wednesday() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.WEEKS;
 		_targetDayOfWeek = DayOfWeek.WEDNESDAY;
 		return this;
@@ -282,7 +312,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule thursday() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.WEEKS;
 		_targetDayOfWeek = DayOfWeek.THURSDAY;
 		return this;
@@ -294,7 +326,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule friday() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.WEEKS;
 		_targetDayOfWeek = DayOfWeek.FRIDAY;
 		return this;
@@ -306,7 +340,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule saturday() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.WEEKS;
 		_targetDayOfWeek = DayOfWeek.SATURDAY;
 		return this;
@@ -318,7 +354,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule sunday() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.WEEKS;
 		_targetDayOfWeek = DayOfWeek.SUNDAY;
 		return this;
@@ -330,7 +368,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule month() {
-		assert _interval == 1 : "use months() instead";
+		if (_interval != 1) {
+			throw new IntervalException("use months() instead");
+		}
 		return months();
 	}
 
@@ -340,7 +380,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule months() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.MONTHS;
 		return this;
 	}
@@ -351,7 +393,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule january() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.YEARS;
 		_targetMonth = 1;
 		return this;
@@ -363,7 +407,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule february() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.YEARS;
 		_targetMonth = 2;
 		return this;
@@ -375,7 +421,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule march() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.YEARS;
 		_targetMonth = 3;
 		return this;
@@ -387,7 +435,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule april() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.YEARS;
 		_targetMonth = 4;
 		return this;
@@ -399,7 +449,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule may() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.YEARS;
 		_targetMonth = 5;
 		return this;
@@ -411,7 +463,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule june() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.YEARS;
 		_targetMonth = 6;
 		return this;
@@ -423,7 +477,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule july() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.YEARS;
 		_targetMonth = 7;
 		return this;
@@ -435,7 +491,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule august() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.YEARS;
 		_targetMonth = 8;
 		return this;
@@ -447,7 +505,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule september() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.YEARS;
 		_targetMonth = 9;
 		return this;
@@ -459,7 +519,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule october() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.YEARS;
 		_targetMonth = 10;
 		return this;
@@ -471,7 +533,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule november() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.YEARS;
 		_targetMonth = 11;
 		return this;
@@ -483,7 +547,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule december() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.YEARS;
 		_targetMonth = 12;
 		return this;
@@ -495,7 +561,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule year() {
-		assert _interval == 1 : "use years() instead";
+		if (_interval != 1) {
+			throw new IntervalException("use years() instead");
+		}
 		return years();
 	}
 
@@ -505,7 +573,9 @@ public class Schedule {
 	 * @return Schedule object
 	 */
 	public Schedule years() {
-		assert _unit == null : "schedule unit already set";
+		if (_unit != null) {
+			throw new ScheduleException("schedule unit already set");
+		}
 		_unit = ChronoUnit.YEARS;
 		return this;
 	}
@@ -528,20 +598,26 @@ public class Schedule {
 		if (!_repeat && _unit == null) {
 			_unit = ChronoUnit.YEARS;
 		}
-		if (_unit == ChronoUnit.MINUTES) {
-			assert timestamp.matches("^:[0-5]\\d$") : "invalid time format";
-		} else if (_unit == ChronoUnit.HOURS) {
-			assert timestamp.matches("^([0-5]\\d)?:[0-5]\\d$") : "invalid time format";
+		if (_unit == ChronoUnit.MINUTES && !timestamp.matches("^:[0-5]\\d$")) {
+			throw new TimeFormatException("invalid time format");
+		} else if (_unit == ChronoUnit.HOURS && !timestamp.matches("^([0-5]\\d)?:[0-5]\\d$")) {
+			throw new TimeFormatException("invalid time format");
 		} else if (_unit == ChronoUnit.DAYS || _unit == ChronoUnit.WEEKS) {
-			assert timestamp.matches("^([0-2]\\d:)?[0-5]\\d:[0-5]\\d$") : "invalid time format";
+			if (!timestamp.matches("^([0-2]\\d:)?[0-5]\\d:[0-5]\\d$")) {
+				throw new TimeFormatException("invalid time format");
+			}
 		} else if (_unit == ChronoUnit.MONTHS) {
-			assert timestamp.matches("^(-[0-3]\\d)((\\s[0-2]\\d):([0-5]\\d)(:[0-5]\\d)?)?$") : "invalid time format";
+			if (!timestamp.matches("^(-[0-3]\\d)((\\s[0-2]\\d):([0-5]\\d)(:[0-5]\\d)?)?$")) {
+				throw new TimeFormatException("invalid time format");
+			}
 			_usingTargetDate = true;
 		} else if (_unit == ChronoUnit.YEARS) {
-			assert timestamp.matches("^([0-1]\\d)?(-[0-3]\\d)((\\s[0-2]\\d):([0-5]\\d)(:[0-5]\\d)?)?$") : "invalid time format";
+			if (!timestamp.matches("^([0-1]\\d)?(-[0-3]\\d)((\\s[0-2]\\d):([0-5]\\d)(:[0-5]\\d)?)?$")) {
+				throw new TimeFormatException("invalid time format");
+			}
 			_usingTargetDate = true;
 		} else {
-			throw new AssertionError("invalid time unit");
+			throw new ScheduleException("invalid time unit");
 		}
 		// Split on colon, whitespace and hyphen
 		String[] values = timestamp.split(":|\\s|-");

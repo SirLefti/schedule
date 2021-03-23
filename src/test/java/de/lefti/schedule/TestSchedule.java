@@ -14,7 +14,7 @@ public class TestSchedule {
 		Schedule.every(10).seconds().run(() -> System.out.println("Hello every 10 seconds"));
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test(expected = IntervalException.class)
 	public void testExpectSyntaxAssertionFail() {
 		Schedule.every(10).second().run(() -> System.out.println("This should never work"));
 	}
@@ -25,12 +25,12 @@ public class TestSchedule {
 	 * are calling their plural form.
 	 */
 	@Ignore
-	@Test(expected = AssertionError.class)
+	@Test(expected = IntervalException.class)
 	public void testExpectSyntaxAssertNotIdeal() {
 		Schedule.every().seconds().run(() -> System.out.println("This should never work"));
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test(expected = TimeFormatException.class)
 	public void testExpectTimeFormatAssertionFail() {
 		Schedule.every().day().at("25:90").run(() -> System.out.println("This should never work"));
 	}
@@ -40,12 +40,12 @@ public class TestSchedule {
 		Schedule.every().day().at("21:35").run(() -> System.out.println("Hello every day"));
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test(expected = ScheduleException.class)
 	public void testWeirdSyntax() {
 		Schedule.every().second().monday().run(() -> System.out.println("This should never work"));
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test(expected = ScheduleException.class)
 	public void testMoreWeirdSyntax() {
 		Schedule.every().week().monday().run(() -> System.out.println("This should never work"));
 	}
