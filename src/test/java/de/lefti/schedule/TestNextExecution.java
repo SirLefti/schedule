@@ -144,7 +144,9 @@ public class TestNextExecution {
 
 		ZonedDateTime nextMonday8AM = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).withHour(8);
 		if (nextMonday8AM.isBefore(ZonedDateTime.now())) {
-			nextMonday8AM = nextMonday8AM.plusDays((DayOfWeek.MONDAY.compareTo(nextMonday8AM.getDayOfWeek()) + DAYS_PER_WEEK) % DAYS_PER_WEEK);
+			// this is 0 if it is monday, but we have to shift it to next monday, because today's 8 AM is in the past
+			var shiftDays = (DayOfWeek.MONDAY.compareTo(nextMonday8AM.getDayOfWeek()) + DAYS_PER_WEEK) % DAYS_PER_WEEK;
+			nextMonday8AM = nextMonday8AM.plusDays(shiftDays == 0 ? 7 : shiftDays);
 		}
 
 		assertEquals(nextMonday8AM.toInstant().toEpochMilli(), nextExecution.getLong(task));

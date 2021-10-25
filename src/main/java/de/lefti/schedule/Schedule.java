@@ -598,10 +598,14 @@ public class Schedule {
 		if (!_repeat && _unit == null) {
 			_unit = ChronoUnit.YEARS;
 		}
-		if (_unit == ChronoUnit.MINUTES && !timestamp.matches("^:[0-5]\\d$")) {
-			throw new TimeFormatException("invalid time format");
-		} else if (_unit == ChronoUnit.HOURS && !timestamp.matches("^([0-5]\\d)?:[0-5]\\d$")) {
-			throw new TimeFormatException("invalid time format");
+		if (_unit == ChronoUnit.MINUTES) {
+			if (!timestamp.matches("^:[0-5]\\d$")) {
+				throw new TimeFormatException("invalid time format");
+			}
+		} else if (_unit == ChronoUnit.HOURS) {
+			if (!timestamp.matches("^([0-5]\\d)?:[0-5]\\d$")) {
+				throw new TimeFormatException("invalid time format");
+			}
 		} else if (_unit == ChronoUnit.DAYS || _unit == ChronoUnit.WEEKS) {
 			if (!timestamp.matches("^([0-2]\\d:)?[0-5]\\d:[0-5]\\d$")) {
 				throw new TimeFormatException("invalid time format");

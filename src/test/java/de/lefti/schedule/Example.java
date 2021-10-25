@@ -10,7 +10,7 @@ public class Example {
 		Schedule.every().minute().run(() -> System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + "] " + "Hello from scheduler every minute"));
 		Schedule.every().minute().at(":15").run(() -> System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + "] " + "Hello from scheduler every minute at :15"));
 		Schedule toCancel = Schedule.every().second().run(() -> System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + "] " + "This will run only a few times"));
-		Schedule.every().minute().at(":00").run(() -> {
+		Schedule.once().minute().at(":00").run(() -> {
 			System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + "] " + "Killing cancel task");
 			toCancel.cancel();
 		});
