@@ -114,32 +114,32 @@ public class TestNextExecution {
 	}
 
 	@Test
-	public void testEveryFirstAprilUsingAt() throws IllegalAccessException {
-		Schedule task = Schedule.every().year().at("04-01").run(() -> System.out.println("Hello world"));
+	public void testEveryFirstAprilUsingAt() throws IllegalAccessException, InvocationTargetException {
+		Schedule task = Schedule.every().year().at("04-01");
 
 		ZonedDateTime firstOfApril = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).withMonth(4).withDayOfMonth(1);
 		if (firstOfApril.isBefore(ZonedDateTime.now())) {
 			firstOfApril = firstOfApril.plusYears(1);
 		}
 
-		assertEquals(firstOfApril.toInstant().toEpochMilli(), nextExecution.getLong(task));
+		assertEquals(firstOfApril.toInstant().toEpochMilli(), (long) nextExecutionTimestamp.invoke(task));
 	}
 
 	@Test
-	public void testOnceAtSpecificDate() throws IllegalAccessException {
-		Schedule task = Schedule.once().september().at("-19").run(() -> System.out.println("Hello world"));
+	public void testOnceAtSpecificDate() throws IllegalAccessException, InvocationTargetException {
+		Schedule task = Schedule.once().september().at("-19");
 
 		ZonedDateTime talkLikeAPirateDay = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).withMonth(9).withDayOfMonth(19);
 		if (talkLikeAPirateDay.isBefore(ZonedDateTime.now())) {
 			talkLikeAPirateDay = talkLikeAPirateDay.plusYears(1);
 		}
 
-		assertEquals(talkLikeAPirateDay.toInstant().toEpochMilli(), nextExecution.getLong(task));
+		assertEquals(talkLikeAPirateDay.toInstant().toEpochMilli(), (long) nextExecutionTimestamp.invoke(task));
 	}
 
 	@Test
-	public void testOnceAtNextMonday() throws IllegalAccessException {
-		Schedule task = Schedule.once().monday().at("08:00").run(() -> System.out.println("Hello world"));
+	public void testOnceAtNextMonday() throws IllegalAccessException, InvocationTargetException {
+		Schedule task = Schedule.once().monday().at("08:00");
 		final int DAYS_PER_WEEK = 7;
 
 		ZonedDateTime nextMonday8AM = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).withHour(8);
@@ -149,6 +149,6 @@ public class TestNextExecution {
 			nextMonday8AM = nextMonday8AM.plusDays(shiftDays == 0 ? 7 : shiftDays);
 		}
 
-		assertEquals(nextMonday8AM.toInstant().toEpochMilli(), nextExecution.getLong(task));
+		assertEquals(nextMonday8AM.toInstant().toEpochMilli(), (long) nextExecutionTimestamp.invoke(task));
 	}
 }

@@ -234,7 +234,6 @@ public class Schedule {
 			throw new ScheduleException("schedule unit already set");
 		}
 		_unit = ChronoUnit.DAYS;
-		_targetDayOfWeek = ZonedDateTime.now().getDayOfWeek();
 		return this;
 	}
 
